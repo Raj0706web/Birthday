@@ -485,6 +485,13 @@
   }
   document.addEventListener('click', tryAutoPlay, { once: true });
   document.addEventListener('touchstart', tryAutoPlay, { once: true });
+
+  const startBtn = document.querySelector('.start-btn');
+  if (startBtn) {
+    startBtn.addEventListener('click', () => {
+      audio.play().catch(() => {});
+    });
+  }
 </script>
 </body>
 </html>
