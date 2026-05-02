@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday, Mohor ♡</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #fdf6ee;
+    --warm: #f5e6d3;
+    --blush: #e8c4a0;
+    --terra: #c9956c;
+    --deep: #5c3d2e;
+    --ink: #2e1f14;
+    --soft: #a0785a;
+  }
+
+  body {
+    background: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    cursor: default;
+  }
+
+  /* ── SLIDE COUNTER ── */
+  #counter {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: flex;
+    gap: 6px;
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--blush);
+    transition: background 0.3s, transform 0.3s;
+  }
+  .dot.active {
+    background: var(--terra);
+    transform: scale(1.4);
+  }
+
+  /* ── NAV ARROWS ── */
+  .nav-btn {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--soft);
+    font-size: 28px;
+    padding: 16px;
+    transition: color 0.2s, transform 0.2s;
+    opacity: 0.5;
+  }
+  .nav-btn:hover { color: var(--terra); opacity: 1; transform: translateY(-50%) scale(1.1); }
+  #prev-btn { left: 10px; }
+  #next-btn { right: 10px; }
+
+  /* ── SLIDESHOW WRAPPER ── */
+  #slideshow {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+  }
+
+  /* ── SINGLE SLIDE ── */
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+  }
+  .slide.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* ── PHOTO FRAME ── */
+  .photo-wrap {
+    position: relative;
+    margin-bottom: 32px;
+  }
+  .photo-frame {
+    width: min(340px, 75vw);
+    height: min(380px, 55vh);
+    object-fit: cover;
+    border-radius: 4px;
+    display: block;
+    box-shadow: 6px 10px 40px rgba(92,61,46,0.18);
+  }
+  .photo-placeholder {
+    width: min(340px, 75vw);
+    height: min(380px, 55vh);
+    background: var(--warm);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 6px 10px 40px rgba(92,61,46,0.18);
+    border: 1.5px dashed var(--blush);
+    gap: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .photo-placeholder:hover { background: #ede0d0; }
+  .photo-placeholder .ph-icon { font-size: 36px; opacity: 0.5; }
+  .photo-placeholder .ph-text {
+    font-size: 12px;
+    color: var(--soft);
+    text-align: center;
+    letter-spacing: 0.04em;
+    padding: 0 24px;
+  }
+
+  /* corner tape effect */
+  .tape {
+    position: absolute;
+    width: 48px; height: 18px;
+    background: rgba(232,196,160,0.55);
+    border-radius: 2px;
+  }
+  .tape.tl { top: -8px; left: 20px; transform: rotate(-3deg); }
+  .tape.tr { top: -8px; right: 20px; transform: rotate(3deg); }
+
+  /* ── MESSAGE ── */
+  .msg-wrap {
+    max-width: min(460px, 88vw);
+    text-align: center;
+  }
+  .slide-label {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--terra);
+    margin-bottom: 10px;
+    opacity: 0.8;
+  }
+  .slide-msg {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(17px, 2.4vw, 22px);
+    font-weight: 300;
+    color: var(--deep);
+    line-height: 1.65;
+    font-style: italic;
+  }
+  .slide-msg em {
+    font-style: normal;
+    font-weight: 400;
+    color: var(--terra);
+  }
+
+  /* ── TITLE SLIDE ── */
+  .title-slide .big-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(36px, 7vw, 72px);
+    font-weight: 300;
+    color: var(--deep);
+    line-height: 1.1;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .title-slide .subtitle {
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    color: var(--soft);
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .start-btn {
+    background: var(--terra);
+    color: white;
+    border: none;
+    border-radius: 40px;
+    padding: 12px 32px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .start-btn:hover { background: var(--deep); transform: scale(1.03); }
+
+  /* ── LAST SLIDE ── */
+  .last-slide .heart {
+    font-size: 48px;
+    margin-bottom: 16px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.12); }
+  }
+  .last-slide .final-msg {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(20px, 3.2vw, 30px);
+    font-weight: 300;
+    color: var(--deep);
+    line-height: 1.6;
+    text-align: center;
+    max-width: min(480px, 88vw);
+    font-style: italic;
+  }
+  .last-slide .final-name {
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    color: var(--terra);
+    text-transform: uppercase;
+    margin-top: 20px;
+  }
+
+  /* ── BG TEXTURE ── */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 15% 85%, rgba(201,149,108,0.07) 0%, transparent 50%),
+      radial-gradient(circle at 85% 15%, rgba(232,196,160,0.1) 0%, transparent 45%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── SWIPE HINT ── */
+  #swipe-hint {
+    position: fixed;
+    bottom: 56px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--soft);
+    text-transform: uppercase;
+    opacity: 0.55;
+    z-index: 99;
+  }
+</style>
+</head>
+<body>
+
+<audio id="bg-audio" src="song.mp3" loop></audio>
+
+<!-- NAV -->
+<button class="nav-btn" id="prev-btn" onclick="changeSlide(-1)">‹</button>
+<button class="nav-btn" id="next-btn" onclick="changeSlide(1)">›</button>
+
+<!-- DOTS -->
+<div id="counter"></div>
+<div id="swipe-hint">swipe or use arrows</div>
+
+<!-- SLIDES -->
+<div id="slideshow">
+
+  <!-- 0: Title -->
+  <div class="slide title-slide active" data-index="0">
+    <div class="big-title">Happy<br>Birthday,<br>Mohor ♡</div>
+    <div class="subtitle">A little story — just for you</div>
+    <button class="start-btn" onclick="changeSlide(1)">Begin →</button>
+  </div>
+
+  <!-- 1 -->
+  <div class="slide" data-index="1">
+    <div class="photo-wrap">
+      <div class="tape tl"></div><div class="tape tr"></div>
+      <img class="photo-frame" src="photos/mohor1.jpeg" alt="">
+    </div>
+    <div class="msg-wrap">
+      <div class="slide-label">Chapter One</div>
+      <div class="slide-msg">There was a little girl, just figuring out the world.<br>
+        <em>Quiet. Curious. Entirely her own.</em>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="slide" data-index="2">
+    <div class="photo-wrap">
+      <div class="tape tl"></div><div class="tape tr"></div>
+      <img class="photo-frame" src="photos/mohor2.jpeg" alt="">
+    </div>
+    <div class="msg-wrap">
+      <div class="slide-label">Growing up</div>
+      <div class="slide-msg">She grew up without needing anyone to complete her.<br>
+        Simple days. <em>Simple joy.</em> No drama. No chaos.
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div class="slide" data-index="3">
+    <div class="photo-wrap">
+      <div class="tape tl"></div><div class="tape tr"></div>
+      <img class="photo-frame" src="photos/mohor3.jpeg" alt="">
+    </div>
+    <div class="msg-wrap">
+      <div class="slide-label">School days</div>
+      <div class="slide-msg">She had her world — her little routines,<br>
+        her silences, her <em>unbothered peace.</em>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4 -->
+  <div class="slide" data-index="4">
+    <div class="photo-wrap">
+      <div class="tape tl"></div><div class="tape tr"></div>
+      <img class="photo-frame" src="photos/mohor4.jpeg" alt="">
+    </div>
+    <div class="msg-wrap">
+      <div class="slide-label">Teenage years</div>
+      <div class="slide-msg">No one could touch her calm.<br>
+        Nonchalant. Unbothered. <em>Completely herself.</em>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5 -->
+  <div class="slide" data-index="5">
+    <div class="photo-wrap">
+      <div class="tape tl"></div><div class="tape tr"></div>
+      <img class="photo-frame" src="photos/mohor5.jpeg" alt="">
+    </div>
+    <div class="msg-wrap">
+      <div class="slide-label">20 years of this</div>
+      <div class="slide-msg">
+        <em>Twenty whole years.</em> Solo. Clear-headed.<br>
+        Not waiting for anyone. Not needing anyone.
+      </div>
+    </div>
+  </div>
+
+  <!-- 6 -->
+  <div class="slide" data-index="6">
+    <div class="photo-wrap">
+      <div class="tape tl"></div><div class="tape tr"></div>
+      <img class="photo-frame" src="photos/mohor6.jpeg" alt="">
+    </div>
+    <div class="msg-wrap">
+      <div class="slide-label">And then —</div>
+      <div class="slide-msg">She was doing perfectly fine, actually.<br>
+        Life was <em>calm, clean, and hers.</em><br>
+        And then… someone showed up.
+      </div>
+    </div>
+  </div>
+
+  <!-- 7 -->
+  <div class="slide" data-index="7">
+    <div class="photo-wrap">
+      <div class="tape tl"></div><div class="tape tr"></div>
+      <img class="photo-frame" src="photos/mohor7.jpeg" alt="">
+    </div>
+    <div class="msg-wrap">
+      <div class="slide-label">Enter: the chaos</div>
+      <div class="slide-msg">Suddenly there was someone who thought<br>
+        her silence was a challenge to fill.<br>
+        <em>Annoying? Absolutely. Gone? Never.</em>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8 -->
+  <div class="slide" data-index="8">
+    <div class="photo-wrap">
+      <div class="tape tl"></div><div class="tape tr"></div>
+      <img class="photo-frame" src="photos/mohor8.jpeg" alt="">
+    </div>
+    <div class="msg-wrap">
+      <div class="slide-label">The awkward era</div>
+      <div class="slide-msg">He made things <em>awkward.</em> On purpose, probably.<br>
+        Argued about things that didn't matter.<br>
+        Won nothing. Showed up anyway.
+      </div>
+    </div>
+  </div>
+
+  <!-- 9 -->
+  <div class="slide" data-index="9">
+    <div class="photo-wrap">
+      <div class="tape tl"></div><div class="tape tr"></div>
+      <img class="photo-frame" src="photos/mohor9.jpeg" alt="">
+    </div>
+    <div class="msg-wrap">
+      <div class="slide-label">The possessive one</div>
+      <div class="slide-msg">Possessive? <em>Guilty.</em><br>
+        Doesn't share her attention well.<br>
+        Still figuring that part out.
+      </div>
+    </div>
+  </div>
+
+  <!-- 10 -->
+  <div class="slide" data-index="10">
+    <div class="photo-wrap">
+      <div class="tape tl"></div><div class="tape tr"></div>
+      <img class="photo-frame" src="photos/mohor10.jpeg" alt="">
+    </div>
+    <div class="msg-wrap">
+      <div class="slide-label">But —</div>
+      <div class="slide-msg">He loves you in the most <em>embarrassingly obvious</em> way.<br>
+        Adores you quietly when you're not looking.<br>
+        Yours. Fully. Stubbornly yours.
+      </div>
+    </div>
+  </div>
+
+  <!-- 11: FINAL -->
+  <div class="slide last-slide" data-index="11">
+    <div class="heart">♡</div>
+    <div class="final-msg">
+      You spent 20 years being perfectly okay alone.<br>
+      Which means this isn't need —<br>
+      <em>it's a choice.</em><br><br>
+      And he chooses you. Every single, annoying day.
+    </div>
+    <div class="final-name">Happy Birthday, Mohor ♡</div>
+  </div>
+
+</div><!-- end slideshow -->
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  // ── DOTS ──
+  const counter = document.getElementById('counter');
+  slides.forEach((_,i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i===0?' active':'');
+    d.onclick = () => goTo(i);
+    counter.appendChild(d);
+  });
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    counter.children[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    counter.children[current].classList.add('active');
+  }
+
+  function changeSlide(dir) { goTo(current + dir); }
+
+  // ── KEYBOARD ──
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   changeSlide(-1);
+  });
+
+  // ── TOUCH SWIPE ──
+  let startX = 0;
+  document.addEventListener('touchstart', e => { startX = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 50) changeSlide(dx < 0 ? 1 : -1);
+  });
+
+  // ── MUSIC — auto-plays on first tap/click ──
+  const audio = document.getElementById('bg-audio');
+  let autoPlayDone = false;
+  function tryAutoPlay() {
+    if (autoPlayDone) return;
+    autoPlayDone = true;
+    audio.play().catch(() => {});
+  }
+  document.addEventListener('click', tryAutoPlay, { once: true });
+  document.addEventListener('touchstart', tryAutoPlay, { once: true });
+</script>
+</body>
+</html>
