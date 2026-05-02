@@ -257,7 +257,7 @@
 </head>
 <body>
 
-<audio id="bg-audio" src="song.mp3" loop></audio>
+<audio id="bg-audio" src="song.mp3" loop preload="auto" playsinline></audio>
 
 <!-- NAV -->
 <button class="nav-btn" id="prev-btn" onclick="changeSlide(-1)">‹</button>
@@ -488,8 +488,11 @@
 
   const startBtn = document.querySelector('.start-btn');
   if (startBtn) {
-    startBtn.addEventListener('click', () => {
-      audio.play().catch(() => {});
+    startBtn.addEventListener('click', event => {
+      event.preventDefault();
+      audio.play().catch(err => {
+        console.warn('Audio playback blocked or failed:', err);
+      });
     });
   }
 </script>
